@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda | Mecánica JOYMAN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Agenda de citas del taller</p>
+    </header>
+
+    <main class="contenedor">
+      
+        <div class="cabecera-agenda">
+            <h2>Gestión de citas</h2>
+
+                <a href="{{ url_for('inicio') }}"
+                class="boton-secundario">
+                    ← Volver al inicio
+                </a>
+            </div>
+        </div>
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="mensaje {{ categoria }}" role="status"> {{ mensaje }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="seccion">
+            <h2>Programar una cita</h2>
+
+            {% if not clientes %}
+                <p>Primero debes registrar al menos un cliente.</p>
+            {% elif not servicios %}
+                <p>Primero debes registrar al menos un servicio activo.</p>
+            {% else %}
+
+                <form method="POST"
+                      action="{{ url_for('citas') }}"
+                      class="formulario">
+
+                    <div class="campo">
+                        <label for="cliente_id">Cliente *</label>
+
+                        <select id="cliente_id" name="cliente_id" required>
+                            <option value="">Selecciona un cliente</option>
+
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente['id'] }}">
+                                    {{ cliente['nombre'] }} —
+                                    {{ cliente['telefono'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="servicio_id">Servicio *</label>
+
+                        <select id="servicio_id" name="servicio_id" required>
+                            <option value="">Selecciona un servicio</option>
+
+                            {% for servicio in servicios %}
+                        <option value="{{ servicio['id'] }}">
+                            {{ servicio['nombre'] }} —
+                            ${{ "%.2f"|format(servicio['precio']) }}
+                        </option>
+                    {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="fecha">Fecha *</label>
+                        <input type="date" id="fecha" name="fecha" min="{{ hoy }}" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="hora">Hora de inicio *</label>
+                        <select id="hora" name="hora" required>
+                            <option value="">Selecciona una hora</option>
+
+                            {% for hora in range(8, 18) %}
+                                <option value="{{ '%02d:00'|format(hora) }}">
+                                    {{ '%02d:00'|format(hora) }}
+                                </option>
+
+                                {% if hora < 17 %}
+                                    <option value="{{ '%02d:30'|format(hora) }}">
+                                        {{ '%02d:30'|format(hora) }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="campo campo-completo">
+                        <label for="notas">Notas de la reparación</label>
+
+                        <textarea id="notas" name="notas" rows="3" maxlength="1000" placeholder="Describe el problema del vehículo..."></textarea>
+                    </div>
+                    <div class="campo campo-completo">
+                        <button type="submit" class="boton">Registrar cita</button>
+                    </div>
+
+                </form>
+            {% endif %}
+        </section>
+
+        <form method="GET" action="{{ url_for('citas') }}" class="filtro-fecha">
+
+            <label for="fecha_filtro">Filtrar citas por fecha:</label>
+            <input type="date" id="fecha_filtro" name="fecha" value="{{ fecha_filtro }}">
+            <button type="submit">Buscar</button>
+            <a href="{{ url_for('citas') }}">Ver todas</a>
+        </form>
+
+        <section class="seccion">
+            <h2>Citas programadas</h2>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Vehículo</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for cita in citas %}
+                            <tr>
+                                <td>{{ cita['fecha'] }}</td>
+
+                                <td>{{ cita['hora'] }}</td>
+
+                                <td>{{ cita['cliente'] }}<br>
+                                <small>{{ cita['telefono'] }}</small>
+                                </td>
+
+                                <td>{{ cita['vehiculo'] or '—' }}</td>
+
+                                <td>{{ cita['servicio'] }}</td>
+
+                                <td>
+                                    <span class="estado {{ cita['estado'] }}">
+                                        {{ cita['estado']|capitalize }}
+                                    </span>
+                                </td>     
+                                <td>
+                                    <div class="acciones-cita">
+                                        {% if cita['estado'] == 'confirmada' %}
+                                            <a href="{{ url_for('editar_cita', cita_id=cita['id']) }}"
+                                            class="boton-editar">
+                                                Editar
+                                            </a>
+
+                                            <form method="POST"
+                                                action="{{ url_for('cancelar_cita', cita_id=cita['id']) }}"
+                                                class="form-cancelar"
+                                                onsubmit="return confirm('¿Seguro que deseas cancelar esta cita?');">
+                                                <button type="submit" class="boton-cancelar">
+                                                    Cancelar
+                                                </button>
+                                            </form>           
+                                            <form method="POST"
+                                                action="{{ url_for('completar_cita', cita_id=cita['id']) }}"
+                                                class="form-cancelar"
+                                                onsubmit="return confirm('¿Confirmas que este servicio ya se realizó?');">
+
+                                                <button type="submit"
+                                                        class="boton-completar">
+                                                    ✓
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        <form method="POST"
+                                            action="{{ url_for('eliminar_cita', cita_id=cita['id']) }}"
+                                            class="form-cancelar"
+                                            onsubmit="return confirm('¿Estás seguro de eliminar definitivamente esta cita? Esta acción no se puede deshacer.');">
+                                            <button type="submit" class="boton-cancelar">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7">
+                                    Todavía no hay citas registradas.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+          <div class="acciones-cita">
+                <a href="{{ url_for('historial_citas') }}"
+                class="boton-secundario">
+                    Historial ✓
+                </a>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de citas | Mecánica JOYMAN</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Historial de servicios realizados</p>
+    </header>
+
+    <main class="contenedor">
+        <div class="cabecera-agenda">
+            <h2>Historial de citas</h2>
+            <a href="{{ url_for('citas') }}" class="boton-secundario">
+                ← Volver a la agenda
+            </a>
+        </div>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="mensaje {{ categoria }}" role="status">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="GET"
+              action="{{ url_for('historial_citas') }}"
+              class="filtro-fecha">
+            <label for="fecha">Filtrar por fecha:</label>
+            <input type="date"
+                   id="fecha"
+                   name="fecha"
+                   value="{{ fecha_filtro }}">
+            <button type="submit">Buscar</button>
+            <a href="{{ url_for('historial_citas') }}">Ver todo</a>
+        </form>
+        
+<div style="margin: 16px 0;">
+    <a href="{{ url_for('descargar_historial_excel', fecha=fecha_filtro) }}"
+       class="boton"
+       style="display: inline-block; text-decoration: none;">
+        📊 Descargar Excel
+    </a>
+</div>
+
+
+        <section class="seccion">
+            <h2>Servicios completados ({{ historial|length }})</h2>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Vehículo</th>
+                            <th>Servicio</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in historial %}
+                            <tr>
+                                <td>{{ cita['fecha'] }}</td>
+                                <td>{{ cita['hora'] }}</td>
+                                <td>
+                                    {{ cita['cliente'] }}<br>
+                                    <small>{{ cita['telefono'] }}</small>
+                                </td>
+                                <td>{{ cita['vehiculo'] or '—' }}</td>
+                                <td>{{ cita['servicio'] }}</td>
+                                <td>${{ "%.2f"|format(cita['precio']) }}</td>
+                                <td>
+                                    <span class="estado completada">
+                                        ✓ Completada
+                                    </span>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7">
+                                    No hay citas completadas
+                                    {% if fecha_filtro %}
+                                        para esta fecha.
+                                    {% else %}
+                                        todavía.
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+</body>
+</html>

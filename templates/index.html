@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel principal | Mecánica JOYMAN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Sistema de gestión del taller mecánico</p>
+    </header>
+
+    <main class="contenedor">
+
+        <section class="estadisticas">
+            <article class="tarjeta-estadistica">
+                <div class="icono-estadistica">📅</div>
+                <h3>Citas de hoy</h3>
+                <p class="numero-estadistica">{{ total_citas_hoy }}</p>
+                <span>Confirmadas o completadas</span>
+            </article>
+
+            <article class="tarjeta-estadistica">
+                <div class="icono-estadistica">👥</div>
+                <h3>Clientes registrados</h3>
+                <p class="numero-estadistica">{{ total_clientes }}</p>
+                <span>Total de clientes</span>
+            </article>
+
+            <article class="tarjeta-estadistica">
+                <div class="icono-estadistica">🔧</div>
+                <h3>Servicios disponibles</h3>
+                <p class="numero-estadistica">{{ total_servicios }}</p>
+                <span>Servicios activos</span>
+            </article>
+        </section>
+        <section class="bienvenida">
+            <h2>Panel principal</h2>
+
+            <p> Administra los clientes, servicios y citas de Mecánica JOYMAN desde un solo lugar.</p>
+
+            <div class="botones"> 
+                <a href="{{ url_for('clientes') }}" class="boton"> Clientes</a>
+                <a href="{{ url_for('servicios') }}" class="boton"> Servicios</a>
+                <a href="{{ url_for('citas') }}" class="boton"> Agenda de citas</a>
+            </div>
+        </section>
+        <section class="resumen-citas">
+            <div class="titulo-resumen">
+                <div>
+                    <h2>Agenda de hoy</h2>
+                    <p>{{ hoy }}</p>
+                </div>
+
+                <a href="{{ url_for('citas') }}" class="boton">Ver agenda completa</a>
+            </div>
+
+            {% if citas_hoy %}
+                <div class="tabla-contenedor">
+                    <table class="tabla-dashboard">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>Vehículo</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for cita in citas_hoy %}
+                                <tr>
+                                    <td>{{ cita.hora }}</td>
+                                    <td>{{ cita.cliente }}</td>
+                                    <td>{{ cita.vehiculo or 'No especificado' }}</td>
+                                    <td>{{ cita.servicio }}</td>
+                                    <td>
+                                        <span class="estado-cita {{ cita.estado }}">
+                                            {{ cita.estado|capitalize }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="sin-citas">
+                    <div class="icono-sin-citas">🗓️</div>
+                    <h3>No hay citas para hoy</h3>
+                    <p>Cuando registres una cita para esta fecha, aparecerá aquí.</p>
+
+                    <a href="{{ url_for('citas') }}" class="boton">
+                        Registrar una cita
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+</body>
+</html>

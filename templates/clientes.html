@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Mecánica JOYMAN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Administración de clientes</p>
+    </header>
+
+    <main class="contenedor">
+
+        <div class="encabezado-pagina">
+            <h2>Gestión de clientes</h2>
+
+            <a href="{{ url_for('inicio') }}" class="boton-secundario"> ← Volver al inicio </a>
+        </div>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="mensaje {{ categoria }}" role="status">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="seccion">
+            <h2>Registrar nuevo cliente</h2>
+
+            <form method="POST" action="{{ url_for('clientes') }}" class="formulario">
+
+                <div class="campo">
+                    <label for="nombre">Nombre completo *</label>
+                    <input type="text" id="nombre" name="nombre" maxlength="120" autocomplete="name" required>
+                </div>
+
+                <div class="campo">
+                    <label for="telefono">Teléfono *</label>
+                    <input type="tel" id="telefono" name="telefono" maxlength="30" autocomplete="tel" required>
+                </div>
+
+                <div class="campo">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" name="correo" maxlength="254" autocomplete="email">
+                </div>
+
+                <div class="campo">
+                    <label for="vehiculo">Vehículo</label>
+                    <input type="text" id="vehiculo" name="vehiculo" maxlength="150" placeholder="Ej. Nissan Versa 2022">
+                </div>
+
+                <div class="campo campo-completo">
+                    <button type="submit" class="boton">Registrar cliente</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="seccion">
+            <h2>Clientes registrados ({{ clientes|length }})</h2>
+
+            <input type="search" id="buscarCliente" class="buscador" placeholder="Buscar por nombre o teléfono..." aria-label="Buscar clientes">
+
+            <div class="tabla-contenedor">
+                <table id="tablaClientes">
+                    <thead>
+                     <tr>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Vehículo</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente["nombre"] }}</td>
+                        <td>{{ cliente["telefono"] }}</td>
+                        <td>{{ cliente["correo"] or "—" }}</td>
+                        <td>{{ cliente["vehiculo"] or "—" }}</td>
+                        <td>
+            <a href="{{ url_for('editar_cliente', cliente_id=cliente['id']) }}" class="boton-secundario"> Editar</a>
+        </td>
+    </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    Todavía no hay clientes registrados.
+                                </td>
+                            </tr>
+                       {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+
+    <script>
+        const buscador = document.getElementById("buscarCliente");
+        const filas = document.querySelectorAll("#tablaClientes tbody tr");
+
+        buscador.addEventListener("input", function () {
+            const texto = this.value.toLowerCase().trim();
+
+            filas.forEach(function (fila) {
+                const contenido = fila.textContent.toLowerCase();
+                fila.hidden = !contenido.includes(texto);
+            });
+        });
+    </script>
+</body>
+</html>

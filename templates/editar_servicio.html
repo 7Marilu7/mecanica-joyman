@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar servicio | Mecánica JOYMAN</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Editar servicio mecánico</p>
+    </header>
+
+    <main class="contenedor">
+
+        <div class="encabezado-pagina">
+            <h2>Editar servicio</h2>
+
+            <a href="{{ url_for('servicios') }}" class="boton-secundario">
+                ← Volver a servicios
+            </a>
+        </div>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="mensaje {{ categoria }}" role="status">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="formulario-edicion">
+            <h2>Datos del servicio</h2>
+
+            <form method="POST"
+                  action="{{ url_for('editar_servicio', servicio_id=servicio['id']) }}"
+                  class="formulario">
+
+                <div class="campo campo-completo">
+                    <label for="nombre">Nombre del servicio *</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        maxlength="100"
+                        value="{{ servicio['nombre'] }}"
+                        required
+                    >
+                </div>
+
+                <div class="campo campo-completo">
+                    <label for="precio">Precio en pesos mexicanos *</label>
+                    <input
+                        type="number"
+                        id="precio"
+                        name="precio"
+                        min="0"
+                        max="10000000"
+                        step="0.01"
+                        value="{{ servicio['precio'] }}"
+                        required
+                    >
+                </div>
+
+                <div class="campo campo-completo">
+                    <label for="descripcion">Descripción</label>
+                    <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Describe brevemente el servicio..."
+                    >{{ servicio['descripcion'] or '' }}</textarea>
+                </div>
+
+                <div class="campo campo-completo acciones-edicion">
+                    <button type="submit" class="boton">
+                        Guardar cambios
+                    </button>
+
+                    <a href="{{ url_for('servicios') }}"
+                       class="boton-secundario">
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+
+</body>
+</html>

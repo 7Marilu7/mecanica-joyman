@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Servicios | Mecánica JOYMAN</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Catálogo de servicios mecánicos</p>
+    </header>
+
+    <main class="contenedor">
+
+        <div class="encabezado-pagina">
+            <h2>Gestión de servicios</h2>
+
+            <a href="{{ url_for('inicio') }}" class="boton-secundario">
+                ← Volver al inicio
+            </a>
+        </div>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="mensaje {{ categoria }}" role="status">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="seccion">
+            <h2>Registrar servicio</h2>
+
+            <form method="POST"
+                  action="{{ url_for('servicios') }}"
+                  class="formulario">
+
+                <div class="campo">
+                    <label for="nombre">Nombre del servicio *</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="precio">Precio en pesos mexicanos *</label>
+                    <input
+                        type="number"
+                        id="precio"
+                        name="precio"
+                        min="0"
+                        max="10000000"
+                        step="0.01"
+                        required
+                    >
+                </div>
+
+                <div class="campo campo-completo">
+                    <label for="descripcion">Descripción</label>
+                    <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        rows="3"
+                        maxlength="500"
+                        placeholder="Describe brevemente el servicio..."
+                    ></textarea>
+                </div>
+
+                <div class="campo campo-completo">
+                    <button type="submit" class="boton">
+                        Guardar servicio
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+        <section class="seccion">
+            <h2>Servicios registrados ({{ servicios|length }})</h2>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for servicio in servicios %}
+                            <tr>
+                                <td>{{ servicio["nombre"] }}</td>
+
+                                <td>{{ servicio["descripcion"] or "—" }}</td>
+
+                                <td>
+                                    ${{ "%.2f"|format(servicio["precio"]) }}
+                                </td>
+
+                                <td>
+                                    <div class="acciones-cita">
+                                        <a
+                                            href="{{ url_for('editar_servicio', servicio_id=servicio['id']) }}"
+                                            class="boton-editar"
+                                        >
+                                            Editar
+                                        </a>
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for('eliminar_servicio', servicio_id=servicio['id']) }}"
+                                            class="form-cancelar"
+                                            onsubmit="return confirm('¿Deseas eliminar o desactivar este servicio? Si tiene citas relacionadas, se conservará su historial.');"
+                                        >
+                                            <button
+                                                type="submit"
+                                                class="boton-cancelar"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4">
+                                    Todavía no hay servicios registrados.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+
+</body>
+</html>

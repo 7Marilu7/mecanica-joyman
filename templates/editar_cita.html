@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar cita | Mecánica JOYMAN</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header class="encabezado">
+        <h1>MECÁNICA <span>JOYMAN</span></h1>
+        <p>Editar cita del taller</p>
+    </header>
+
+    <main class="contenedor">
+        <section class="formulario-edicion">
+            <h2>Modificar cita</h2>
+
+            <p>Cambia los datos necesarios y guarda los ajustes.</p>
+
+            {% with mensajes = get_flashed_messages(with_categories=true) %}
+                {% if mensajes %}
+                    {% for categoria, mensaje in mensajes %}
+                        <div class="mensaje-edicion {{ categoria }}" role="status">
+                            {{ mensaje }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="campo-edicion">
+                    <label for="cliente_id">Cliente *</label>
+
+                    <select id="cliente_id" name="cliente_id" required>
+                        {% for cliente in clientes %}
+                            <option
+                                value="{{ cliente.id }}"
+                                {% if cliente.id == cita.cliente_id %}selected{% endif %}
+                            >
+                                {{ cliente.nombre }}
+                                {% if cliente.vehiculo %}
+                                    — {{ cliente.vehiculo }}
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="servicio_id">Servicio *</label>
+
+                    <select id="servicio_id" name="servicio_id" required>
+                        {% for servicio in servicios %}
+                            <option
+                                value="{{ servicio.id }}"
+                                {% if servicio.id == cita.servicio_id %}selected{% endif %}
+                            >
+                                {{ servicio.nombre }} — ${{ "%.2f"|format(servicio.precio or 0) }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="fecha">Fecha *</label>
+
+                    <input type="date" id="fecha" name="fecha" value="{{ cita.fecha }}" min="{{ hoy }}" required>
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="hora">Hora *</label>
+
+                    <input type="time" id="hora" name="hora" value="{{ cita.hora }}" min="08:00" max="17:59" required>
+                    <small>Horario permitido: de 08:00 a 17:59.</small>
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="notas">Notas adicionales</label>
+
+                    <textarea id="notas" name="notas" rows="4" maxlength="1000" placeholder="Detalles del vehículo o del servicio...">{{ cita.notas or "" }}</textarea>
+                </div>
+
+                <div class="acciones-edicion">
+                    <button type="submit" class="boton"> Guardar cambios</button>
+
+                    <a href="{{ url_for('citas') }}" class="boton-secundario">
+                        Volver a la agenda
+                    </a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mecánica JOYMAN</p>
+    </footer>
+</body>
+</html>
