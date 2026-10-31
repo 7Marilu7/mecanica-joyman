@@ -81,4 +81,4 @@ Este repositorio tiene fines de demostración y portafolio. No representa una in
 
 ## Autoría
 
-Proyecto personal desarrollado para practicar y demostrar habilidades de desarrollo web con Python y Flask.
+Proyecto personal desarrollado para practicar y demostrar habilidades de desarrollo web con Python y Flask.  ## María Guadalupe Cruz Paz
