@@ -36,38 +36,53 @@ Mecanica_JOYMAN/
 ├── README.md
 ├── .gitignore
 ├── static/
+│   └── css/
 └── templates/
 ```
 
 ## Instalación local
 
 1. Instala Python 3.
-2. Descarga o clona este repositorio.
-3. Crea un entorno virtual:
 
-   ```bash
-   python -m venv .venv
-   ```
+2. Descarga o clona este repositorio:
 
-4. Activa el entorno virtual en Windows:
+```bash
+git clone https://github.com/7Marilu7/mecanica-joyman.git
+```
 
-   ```powershell
-   .\.venv\Scripts\Activate.ps1
-   ```
+3. Accede a la carpeta del proyecto:
 
-5. Instala las dependencias:
+```bash
+cd mecanica-joyman
+```
 
-   ```bash
-   python -m pip install -r requirements.txt
-   ```
+4. Crea un entorno virtual:
 
-6. Ejecuta la aplicación:
+```bash
+python -m venv .venv
+```
 
-   ```bash
-   python app.py
-   ```
+5. Activa el entorno virtual en Windows:
 
-7. Abre en tu navegador la dirección local que muestra Flask, normalmente `http://127.0.0.1:5000`.
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+6. Instala las dependencias:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+7. Ejecuta la aplicación:
+
+```bash
+python app.py
+```
+
+8. Abre en tu navegador la dirección local que muestra Flask, normalmente:
+
+`http://127.0.0.1:5000`
 
 La aplicación inicializa las tablas y los servicios de ejemplo al arrancar por medio de su función de inicialización.
 
@@ -81,5 +96,6 @@ Este repositorio tiene fines de demostración y portafolio. No representa una in
 
 ## Autoría
 
-Proyecto personal desarrollado para practicar y demostrar habilidades de desarrollo web con Python y Flask.  
-## María Guadalupe Cruz Paz
+Desarrollado por **María Guadalupe Cruz Paz**.
+
+[GitHub](https://github.com/7Marilu7)
